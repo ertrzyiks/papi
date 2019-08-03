@@ -32,41 +32,30 @@ const typeDefs = gql`
   }
 `;
 
-let id = 1
-let spaces = [{
-  name: "Test",
-  id: "0"
-},{
-  name: "Test 2",
-  id: "1"
-}]
+let spaces = {
+  kuba: {
+    name: 'Kuba'
+  }
+}
 
 let entries = [
   {
     id: '1',
     time: 0,
-    spaceId: "1"
+    spaceId: "kuba"
   }
 ]
 
 const resolvers = {
   Query: {
     space: (_, {id}) => {
-      return spaces[parseInt(id, 10)]
+      return spaces[id]
     },
     entries: (_, {spaceId}) => {
       return entries.filter(entry => entry.spaceId === spaceId).sort((a, b) => b.time - a.time)
     }
   },
   Mutation: {
-    createSpace: async (_, {name}) => {
-      const space = {
-        name,
-        id: ++id
-      }
-      spaces.push(space)
-      return space
-    },
     createEntry: async (_, {time, spaceId}) => {
       const entry = {
         time,
