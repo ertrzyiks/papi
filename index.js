@@ -26,6 +26,7 @@ const typeDefs = gql`
     ): Space
     
     createEntry (
+      spaceId: String!
       time: Int!  
     ): Entry
   }
@@ -42,6 +43,7 @@ let spaces = [{
 
 let entries = [
   {
+    id: '1',
     time: 0,
     spaceId: "1"
   }
@@ -53,7 +55,7 @@ const resolvers = {
       return spaces[parseInt(id, 10)]
     },
     entries: (_, {spaceId}) => {
-      return entries.filter(entry => entry.spaceId === spaceId)
+      return entries.filter(entry => entry.spaceId === spaceId).sort((a, b) => b.time - a.time)
     }
   },
   Mutation: {
@@ -64,6 +66,15 @@ const resolvers = {
       }
       spaces.push(space)
       return space
+    },
+    createEntry: async (_, {time, spaceId}) => {
+      const entry = {
+        time,
+        spaceId: spaceId,
+        id: 'fake' + Math.random()
+      }
+      entries.push(entry)
+      return entry
     }
   }
 };

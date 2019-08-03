@@ -6,7 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "deploy": "git push dokku master"
   },
   "dependencies": {
     "apollo-server-express": "^2.8.1",
