@@ -57,6 +57,11 @@ const resolvers = {
   },
   Mutation: {
     createEntry: async (_, {time, spaceId}) => {
+
+      if (typeof spaces[spaceId] === 'undefined') {
+        throw new Error('Unknown space')
+      }
+
       const entry = {
         time,
         spaceId: spaceId,
