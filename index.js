@@ -18,6 +18,7 @@ const typeDefs = gql`
   type Query {
     space(id: String!): Space
     entries(spaceId: String!): [Entry]
+    entry(spaceId: String!, id: String!): Entry
   }
     
   type Mutation {
@@ -27,6 +28,12 @@ const typeDefs = gql`
     
     createEntry (
       spaceId: String!
+      time: Int!  
+    ): Entry
+    
+    updateEntry (
+      spaceId: String!
+      id: String!
       time: Int!  
     ): Entry
   }
@@ -53,6 +60,9 @@ const resolvers = {
     },
     entries: (_, {spaceId}) => {
       return entries.filter(entry => entry.spaceId === spaceId).sort((a, b) => b.time - a.time)
+    },
+    entry: (_, {spaceId, id}) => {
+      return entries.filter(entry => entry.spaceId === spaceId && entry.id === id)[0]
     }
   },
   Mutation: {
@@ -68,6 +78,21 @@ const resolvers = {
         id: 'fake' + Math.random()
       }
       entries.push(entry)
+      return entry
+    },
+
+    updateEntry: async (_, {time, spaceId, id}) => {
+
+      if (typeof spaces[spaceId] === 'undefined') {
+        throw new Error('Unknown space')
+      }
+
+      let entry = entries.find(entry => entry.spaceId === spaceId && entry.id === id)
+
+      if (entry) {
+        entry.time = time
+      }
+
       return entry
     }
   }
