@@ -3,6 +3,7 @@ const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
 
 const app = express()
+const uuid = require('uuid')
 
 const typeDefs = gql`
   type Space {
@@ -18,7 +19,7 @@ const typeDefs = gql`
   type Query {
     space(id: String!): Space
     entries(spaceId: String!): [Entry]
-    entry(spaceId: String!, id: String!): Entry
+    entry(id: String!): Entry
   }
     
   type Mutation {
@@ -32,7 +33,6 @@ const typeDefs = gql`
     ): Entry
     
     updateEntry (
-      spaceId: String!
       id: String!
       time: Int!  
     ): Entry
@@ -53,47 +53,63 @@ let entries = [
   }
 ]
 
+var knex = require('./knex')
+
 const resolvers = {
   Query: {
     space: (_, {id}) => {
       return spaces[id]
     },
     entries: (_, {spaceId}) => {
-      return entries.filter(entry => entry.spaceId === spaceId).sort((a, b) => b.time - a.time)
+      return knex.select('id', 'time', 'extra_food')
+        .from('entries')
+        .orderBy('time', 'desc')
+        .where({spaceId})
     },
-    entry: (_, {spaceId, id}) => {
-      return entries.filter(entry => entry.spaceId === spaceId && entry.id === id)[0]
+    entry: (_, {id}) => {
+      return knex.select('id', 'time', 'extra_food')
+        .from('entries')
+        .orderBy('time', 'desc')
+        .where({id})
+        .then(res => {
+          if (res && res.length > 0) {
+            return res[0]
+          }
+        })
     }
   },
   Mutation: {
     createEntry: async (_, {time, spaceId}) => {
-
       if (typeof spaces[spaceId] === 'undefined') {
         throw new Error('Unknown space')
       }
 
-      const entry = {
-        time,
-        spaceId: spaceId,
-        id: 'fake' + Math.random()
-      }
-      entries.push(entry)
-      return entry
+      const id = uuid.v4()
+      const entry = {id, time, extra_food: 0, spaceId}
+
+      return knex.insert(entry).into('entries').then(() => {
+        return entry
+      })
     },
 
-    updateEntry: async (_, {time, spaceId, id}) => {
-
-      if (typeof spaces[spaceId] === 'undefined') {
-        throw new Error('Unknown space')
-      }
-
-      let entry = entries.find(entry => entry.spaceId === spaceId && entry.id === id)
-
-      if (entry) {
-        entry.time = time
-      }
-
-      return entry
+    updateEntry: async (_, {time, id}) => {
+      return knex('entries')
+        .where({id})
+        .update({
+          time: time,
+          extra_food: undefined,
+        })
+        .then(() => {
+          return knex.select('id', 'time', 'extra_food')
+            .from('entries')
+            .orderBy('time', 'desc')
+            .where({id})
+            .then(res => {
+              if (res && res.length > 0) {
+                return res[0]
+              }
+            })
+        })
     }
   }
 };

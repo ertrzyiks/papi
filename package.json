@@ -7,11 +7,15 @@
   "private": true,
   "scripts": {
     "start": "node index.js",
-    "deploy": "git push dokku master"
+    "deploy": "git push dokku master",
+    "migrate": "knex migrate:latest"
   },
   "dependencies": {
     "apollo-server-express": "^2.8.1",
     "express": "^4.17.1",
-    "graphql": "^14.4.2"
+    "graphql": "^14.4.2",
+    "knex": "^0.19.1",
+    "sqlite3": "^4.0.9",
+    "uuid": "^3.3.2"
   }
 }
