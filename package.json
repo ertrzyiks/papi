@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "prestart": "yarn migrate",
     "start": "node index.js",
     "deploy": "git push dokku master",
     "migrate": "knex migrate:latest"
