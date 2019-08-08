@@ -19,13 +19,13 @@ const resolvers = {
       return knex.select('id', 'time', 'extra_food')
         .from('entries')
         .orderBy('time', 'desc')
-        .where({spaceId: normalize(spaceId)})
+        .where({spaceId: normalize(spaceId), deleted: false})
     },
     entry: (_, {id}) => {
       return knex.select('id', 'time', 'extra_food')
         .from('entries')
         .orderBy('time', 'desc')
-        .where({id})
+        .where({id, deleted: false})
         .then(res => {
           if (res && res.length > 0) {
             return res[0]
@@ -49,7 +49,7 @@ const resolvers = {
 
     updateEntry: async (_, {time, id}) => {
       return knex('entries')
-        .where({id})
+        .where({id, deleted: false})
         .update({
           time: time,
           extra_food: undefined,
@@ -64,6 +64,17 @@ const resolvers = {
                 return res[0]
               }
             })
+        })
+    },
+
+    removeEntry: async (_, {id}) => {
+      return knex('entries')
+        .where({id})
+        .update({deleted: true}).then(() => {
+          return {
+            removedId: id,
+            message: 'Entry removed'
+          }
         })
     }
   }

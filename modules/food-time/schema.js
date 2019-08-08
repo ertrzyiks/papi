@@ -11,6 +11,11 @@ module.exports = gql`
     time: Int!
   }
   
+  type DeletionResult {
+    removedId: String!
+    message: String!
+  }
+  
   type Query {
     space(id: String!): Space
     entries(spaceId: String!): [Entry]
@@ -26,6 +31,10 @@ module.exports = gql`
       spaceId: String!
       time: Int!  
     ): Entry
+    
+    removeEntry (
+      id: String!
+    ): DeletionResult
     
     updateEntry (
       id: String!
