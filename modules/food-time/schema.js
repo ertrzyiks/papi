@@ -8,6 +8,7 @@ module.exports = gql`
   
   type Entry {
     id: String!
+    extra_food: Int!
     time: Int!
   }
   
