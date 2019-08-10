@@ -47,12 +47,12 @@ const resolvers = {
       })
     },
 
-    updateEntry: async (_, {time, id}) => {
+    updateEntry: async (_, {time, extra_food, id}) => {
       return knex('entries')
         .where({id, deleted: false})
         .update({
-          time: time,
-          extra_food: undefined,
+          time,
+          extra_food,
         })
         .then(() => {
           return knex.select('id', 'time', 'extra_food')

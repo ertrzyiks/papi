@@ -39,7 +39,8 @@ module.exports = gql`
     
     updateEntry (
       id: String!
-      time: Int!  
+      time: Int 
+      extra_food: Int 
     ): Entry
   }
 `
