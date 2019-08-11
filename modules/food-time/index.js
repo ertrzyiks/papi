@@ -1,6 +1,8 @@
 const uuid = require('uuid')
 const knex = require('../../knex')
 const typeDefs = require('./schema')
+const subDays = require('date-fns/subDays')
+const startOfDay = require('date-fns/startOfDay')
 
 const normalize = (spaceId) => spaceId.toLowerCase()
 
@@ -19,7 +21,11 @@ const resolvers = {
       return knex.select('id', 'time', 'extra_food')
         .from('entries')
         .orderBy('time', 'desc')
-        .where({spaceId: normalize(spaceId), deleted: false})
+        .where({
+          spaceId: normalize(spaceId),
+          deleted: false,
+        })
+        .andWhere('time', '>', startOfDay(subDays(new Date(), 3)).getTime() / 1000)
     },
     entry: (_, {id}) => {
       return knex.select('id', 'time', 'extra_food')
