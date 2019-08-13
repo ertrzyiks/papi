@@ -1,11 +1,11 @@
 const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
 
-const { typeDefs, resolvers } = require('./modules/food-time')
+const { typeDefs, resolvers, context } = require('./modules/food-time')
 
 const app = express()
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers, context });
 
 server.applyMiddleware({ app, path: '/food-time' })
 

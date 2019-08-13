@@ -9,12 +9,14 @@
     "prestart": "yarn migrate",
     "start": "node index.js",
     "deploy": "git push dokku master",
-    "migrate": "knex migrate:latest"
+    "migrate": "knex migrate:latest",
+    "seed": "knex seed:run"
   },
   "dependencies": {
     "apollo-server-express": "^2.8.1",
     "date-fns": "^2.0.0-beta.4",
     "express": "^4.17.1",
+    "google-auth-library": "^5.2.0",
     "graphql": "^14.4.2",
     "knex": "^0.19.1",
     "sqlite3": "^4.0.9",

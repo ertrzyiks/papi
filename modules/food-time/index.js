@@ -3,6 +3,7 @@ const knex = require('../../knex')
 const typeDefs = require('./schema')
 const subDays = require('date-fns/subDays')
 const startOfDay = require('date-fns/startOfDay')
+const { getUser } = require('./models/user')
 
 const normalize = (spaceId) => spaceId.toLowerCase()
 
@@ -84,9 +85,23 @@ const resolvers = {
         })
     }
   }
-};
+}
+
+const context = async ({ req }) => {
+  const token = (req.headers.authorization || '').replace('Bearer ', '')
+  console.log(token)
+
+  const user = await getUser(token)
+
+  console.log(user)
+
+  if (!user) throw new Error('you must be logged in')
+
+  return { user }
+}
 
 module.exports = {
   typeDefs,
-  resolvers
+  resolvers,
+  context
 }
