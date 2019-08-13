@@ -3,7 +3,7 @@ const { gql } = require('apollo-server-express')
 module.exports = gql`
   type Space {
     id: String!
-    name: String!
+    display_name: String!
   }
   
   type Entry {
@@ -18,7 +18,7 @@ module.exports = gql`
   }
   
   type Query {
-    space(id: String!): Space
+    spaces: [Space]
     entries(spaceId: String!): [Entry]
     entry(id: String!): Entry
   }

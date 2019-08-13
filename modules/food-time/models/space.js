@@ -32,6 +32,21 @@ const findOrCreateSpace = async (name) => {
   return space
 }
 
+const spacesForUser = async (user) => {
+  const spacesFromCollaboration = await knex
+    .select('space_id')
+    .from('collaborators')
+    .where({user_id: user.id})
+    .map(c => c.space_id)
+
+  return await knex
+    .select('id', 'display_name')
+    .from('spaces')
+    .where({ id: spacesFromCollaboration })
+    .orWhere({ owner_id: user.id })
+}
+
 module.exports = {
-  findOrCreateSpace
+  findOrCreateSpace,
+  spacesForUser
 }

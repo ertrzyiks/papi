@@ -3,9 +3,16 @@ const knex = require('../../knex')
 const typeDefs = require('./schema')
 const subDays = require('date-fns/subDays')
 const startOfDay = require('date-fns/startOfDay')
+const { spacesForUser } = require('./models/space')
 const { getUser } = require('./models/user')
 
-const normalize = (spaceId) => spaceId.toLowerCase()
+const normalize = async (spaceId) => {
+  const lowerSpaceId = spaceId.toLowerCase()
+
+  const id = await knex.select('id').from('spaces').where({display_name: lowerSpaceId}).first()
+
+  return id || lowerSpaceId
+}
 
 let spaces = {
   kuba: {
@@ -15,15 +22,15 @@ let spaces = {
 
 const resolvers = {
   Query: {
-    space: (_, {id}) => {
-      return spaces[id]
+    spaces: (_, {}, context) => {
+      return spacesForUser(context.user)
     },
-    entries: (_, {spaceId}) => {
+    entries: async (_, {spaceId}) => {
       return knex.select('id', 'time', 'extra_food')
         .from('entries')
         .orderBy('time', 'desc')
         .where({
-          spaceId: normalize(spaceId),
+          spaceId: await normalize(spaceId),
           deleted: false,
         })
         .andWhere('time', '>', startOfDay(subDays(new Date(), 3)).getTime() / 1000)
@@ -42,12 +49,13 @@ const resolvers = {
   },
   Mutation: {
     createEntry: async (_, {time, spaceId}) => {
-      if (typeof spaces[normalize(spaceId)] === 'undefined') {
+      const normalizedSpaceId = await normalize(spaceId)
+      if (typeof spaces[normalizedSpaceId] === 'undefined') {
         throw new Error('Unknown space')
       }
 
       const id = uuid.v4()
-      const entry = {id, time, extra_food: 0, spaceId: normalize(spaceId)}
+      const entry = {id, time, extra_food: 0, spaceId: normalizedSpaceId}
 
       return knex.insert(entry).into('entries').then(() => {
         return entry
@@ -89,11 +97,8 @@ const resolvers = {
 
 const context = async ({ req }) => {
   const token = (req.headers.authorization || '').replace('Bearer ', '')
-  console.log(token)
 
   const user = await getUser(token)
-
-  console.log(user)
 
   if (!user) throw new Error('you must be logged in')
 
