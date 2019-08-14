@@ -9,9 +9,9 @@ const { getUser } = require('./models/user')
 const normalize = async (spaceId) => {
   const lowerSpaceId = spaceId.toLowerCase()
 
-  const id = await knex.select('id').from('spaces').where({display_name: lowerSpaceId}).first()
+  const res = await knex.select('id').from('spaces').where({display_name: lowerSpaceId}).first()
 
-  return id || lowerSpaceId
+  return (res && res.id) || lowerSpaceId
 }
 
 let spaces = {
@@ -49,13 +49,8 @@ const resolvers = {
   },
   Mutation: {
     createEntry: async (_, {time, spaceId}) => {
-      const normalizedSpaceId = await normalize(spaceId)
-      if (typeof spaces[normalizedSpaceId] === 'undefined') {
-        throw new Error('Unknown space')
-      }
-
       const id = uuid.v4()
-      const entry = {id, time, extra_food: 0, spaceId: normalizedSpaceId}
+      const entry = {id, time, extra_food: 0, spaceId: await normalize(spaceId)}
 
       return knex.insert(entry).into('entries').then(() => {
         return entry
