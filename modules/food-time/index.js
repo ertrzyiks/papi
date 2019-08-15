@@ -26,7 +26,7 @@ const resolvers = {
       return spacesForUser(context.user)
     },
     entries: async (_, {spaceId}) => {
-      return knex.select('id', 'time', 'extra_food')
+      return knex.select('id', 'time', 'extra_food', 'spaceId')
         .from('entries')
         .orderBy('time', 'desc')
         .where({
@@ -36,7 +36,7 @@ const resolvers = {
         .andWhere('time', '>', startOfDay(subDays(new Date(), 3)).getTime() / 1000)
     },
     entry: (_, {id}) => {
-      return knex.select('id', 'time', 'extra_food')
+      return knex.select('id', 'time', 'extra_food', 'spaceId')
         .from('entries')
         .orderBy('time', 'desc')
         .where({id, deleted: false})
@@ -65,7 +65,7 @@ const resolvers = {
           extra_food,
         })
         .then(() => {
-          return knex.select('id', 'time', 'extra_food')
+          return knex.select('id', 'time', 'extra_food', 'spaceId')
             .from('entries')
             .orderBy('time', 'desc')
             .where({id})
