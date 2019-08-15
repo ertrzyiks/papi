@@ -64,16 +64,14 @@ const resolvers = {
         })
         .andWhere('time', '>', startOfDay(subDays(new Date(), 3)).getTime() / 1000)
     },
-    entry: (_, {id}) => {
+    entry: async (_, {id}, context) => {
+      await validateEntryAccess(id, context.user)
+
       return knex.select('id', 'time', 'extra_food', 'spaceId')
         .from('entries')
         .orderBy('time', 'desc')
         .where({id, deleted: false})
-        .then(res => {
-          if (res && res.length > 0) {
-            return res[0]
-          }
-        })
+        .first()
     }
   },
   Mutation: {
