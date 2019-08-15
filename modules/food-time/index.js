@@ -3,8 +3,9 @@ const knex = require('../../knex')
 const typeDefs = require('./schema')
 const subDays = require('date-fns/subDays')
 const startOfDay = require('date-fns/startOfDay')
-const { spacesForUser } = require('./models/space')
+const { loadSpace, spacesForUser, spaceAllowedFor } = require('./models/space')
 const { getUser } = require('./models/user')
+const { loadEntry } = require('./models/entry')
 
 const normalize = async (spaceId) => {
   const lowerSpaceId = spaceId.toLowerCase()
@@ -20,17 +21,45 @@ let spaces = {
   }
 }
 
+const validateSpaceAccess = async (spaceId, user) => {
+  const space = await loadSpace(spaceId)
+
+  if (!space) {
+    throw new Error('Not found')
+  }
+
+  const allowed = await spaceAllowedFor(space, user)
+
+  if (!allowed) {
+    throw new Error('Not found')
+  }
+}
+
+const validateEntryAccess = async (entryId, user) => {
+  const entry = await loadEntry(entryId)
+
+  if (!entry) {
+    throw new Error('Not found')
+  }
+
+  await validateSpaceAccess(entry.spaceId, user)
+}
+
 const resolvers = {
   Query: {
     spaces: (_, {}, context) => {
       return spacesForUser(context.user)
     },
-    entries: async (_, {spaceId}) => {
+    entries: async (_, {spaceId}, context) => {
+      const normalizedSpaceId = await normalize(spaceId)
+
+      await validateSpaceAccess(normalizedSpaceId, context.user)
+
       return knex.select('id', 'time', 'extra_food', 'spaceId')
         .from('entries')
         .orderBy('time', 'desc')
         .where({
-          spaceId: await normalize(spaceId),
+          spaceId: normalizedSpaceId,
           deleted: false,
         })
         .andWhere('time', '>', startOfDay(subDays(new Date(), 3)).getTime() / 1000)
@@ -48,44 +77,51 @@ const resolvers = {
     }
   },
   Mutation: {
-    createEntry: async (_, {time, spaceId}) => {
+    createEntry: async (_, {time, spaceId}, context) => {
+      const normalizedSpaceId = await normalize(spaceId)
+
+      await validateSpaceAccess(normalizedSpaceId, context.user)
+
       const id = uuid.v4()
-      const entry = {id, time, extra_food: 0, spaceId: await normalize(spaceId)}
+      const entry = {id, time, extra_food: 0, spaceId: normalizedSpaceId}
 
       return knex.insert(entry).into('entries').then(() => {
         return entry
       })
     },
 
-    updateEntry: async (_, {time, extra_food, id}) => {
-      return knex('entries')
+    updateEntry: async (_, {time, extra_food, id}, context) => {
+      await validateEntryAccess(id, context.user)
+
+      await knex('entries')
         .where({id, deleted: false})
         .update({
           time,
           extra_food,
         })
-        .then(() => {
-          return knex.select('id', 'time', 'extra_food', 'spaceId')
-            .from('entries')
-            .orderBy('time', 'desc')
-            .where({id})
-            .then(res => {
-              if (res && res.length > 0) {
-                return res[0]
-              }
-            })
+
+      return knex.select('id', 'time', 'extra_food', 'spaceId')
+        .from('entries')
+        .orderBy('time', 'desc')
+        .where({id})
+        .then(res => {
+          if (res && res.length > 0) {
+            return res[0]
+          }
         })
     },
 
-    removeEntry: async (_, {id}) => {
-      return knex('entries')
+    removeEntry: async (_, {id}, context) => {
+      await validateEntryAccess(id, context.user)
+
+      await knex('entries')
         .where({id})
-        .update({deleted: true}).then(() => {
-          return {
-            removedId: id,
-            message: 'Entry removed'
-          }
-        })
+        .update({deleted: true})
+
+      return {
+        removedId: id,
+        message: 'Entry removed'
+      }
     }
   }
 }

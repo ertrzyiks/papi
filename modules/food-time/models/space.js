@@ -1,14 +1,12 @@
 const uuid = require('uuid')
 const knex = require('../../../knex')
-const { verify } = require('../google')
 
-const loadSpace = async (email) => {
+const loadSpace = async (spaceId) => {
   return knex
-    .select('id', 'email')
-    .from('users')
-    .where({email})
+    .select('id', 'display_name', 'owner_id')
+    .from('spaces')
+    .where({id: spaceId})
     .first()
-
 }
 
 const createSpace = async (name) => {
@@ -20,16 +18,6 @@ const createSpace = async (name) => {
       .where({id})
       .first()
   })
-}
-
-const findOrCreateSpace = async (name) => {
-  let space = await loadSpace(name)
-
-  if (!space) {
-    space = await createSpace(name)
-  }
-
-  return space
 }
 
 const spacesForUser = async (user) => {
@@ -46,7 +34,24 @@ const spacesForUser = async (user) => {
     .orWhere({ owner_id: user.id })
 }
 
+const spaceAllowedFor = async (space, user) => {
+  if (space.owner_id === user.id) {
+    return true
+  }
+
+  const numberOfCollaboratorRows = await knex('collaborators')
+    .count('id', {as: 'count'})
+    .where({
+      user_id: user.id,
+      space_id: space.id
+    })
+    .first()
+
+  return numberOfCollaboratorRows.count > 0
+}
+
 module.exports = {
-  findOrCreateSpace,
-  spacesForUser
+  loadSpace,
+  spacesForUser,
+  spaceAllowedFor
 }
