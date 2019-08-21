@@ -9,9 +9,16 @@ module.exports = async (_, {time, spaceId}, context) => {
   await validateSpaceAccess(normalizedSpaceId, context.user)
 
   const id = uuid.v4()
-  const entry = {id, time, extra_food: 0, spaceId: normalizedSpaceId, feeding_type_id: 1}
+  const entry = {
+    id,
+    time,
+    extra_food: 0,
+    spaceId: normalizedSpaceId,
+    feeding_type_id: 1
+  }
 
-  return knex.insert(entry).into('entries').then(() => {
-    return entry
+  return knex.insert(entry).into('entries')
+    .then(() => {
+    return Object.assign({}, entry, { type: 'breast' })
   })
 }

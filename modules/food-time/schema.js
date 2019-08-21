@@ -11,6 +11,7 @@ module.exports = gql`
     extra_food: Int!
     time: Int!
     spaceId: String!
+    type: String! 
   }
   
   type DeletionResult {
