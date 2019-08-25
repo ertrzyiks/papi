@@ -7,7 +7,8 @@ const {
   entry,
   createEntry,
   updateEntry,
-  removeEntry
+  removeEntry,
+  createSpace,
 } = require('./resolvers')
 
 const resolvers = {
@@ -17,6 +18,7 @@ const resolvers = {
     entry
   },
   Mutation: {
+    createSpace,
     createEntry,
     updateEntry,
     removeEntry

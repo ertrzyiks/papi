@@ -5,4 +5,5 @@ module.exports = {
   createEntry: require('./createEntry'),
   updateEntry: require('./updateEntry'),
   removeEntry: require('./removeEntry'),
+  createSpace: require('./createSpace'),
 }
