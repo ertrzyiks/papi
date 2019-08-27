@@ -1,4 +1,5 @@
 const knex = require('../../../knex')
+const format = require('date-fns/format')
 
 module.exports = async (_, {spaceId}, context) => {
   if (context.user !== 'bot') {
@@ -12,7 +13,7 @@ module.exports = async (_, {spaceId}, context) => {
     .orderBy('time', 'desc')
     .first()
     .then(({time}) => {
-      return time
+      return format(time * 1000, 'HH:mm')
     })
 }
 
