@@ -22,6 +22,7 @@ module.exports = gql`
   type Query {
     spaces: [Space]
     entries(spaceId: String!): [Entry]
+    lastEntryDate(spaceId: String!): String
     entry(id: String!): Entry
   }
     

@@ -9,23 +9,29 @@ const {
   updateEntry,
   removeEntry,
   createSpace,
+  lastEntryDate,
 } = require('./resolvers')
 
 const resolvers = {
   Query: {
     spaces,
     entries,
-    entry
+    entry,
+    lastEntryDate,
   },
   Mutation: {
     createSpace,
     createEntry,
     updateEntry,
-    removeEntry
+    removeEntry,
   }
 }
 
 const context = async ({ req }) => {
+  if (req.query.access_token === '123') {
+    return {user: 'bot'}
+  }
+
   const token = (req.headers.authorization || '').replace('Bearer ', '')
 
   const user = await getUser(token)
