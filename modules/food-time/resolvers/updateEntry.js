@@ -5,6 +5,10 @@ module.exports = async (_, {time, extra_food, type, id}, context) => {
   await validateEntryAccess(id, context.user)
 
   const getFeedingTypeId = () => {
+    if (!type) {
+      return
+    }
+
     return knex('feeding_types')
       .select('id')
       .where({ type: type })
