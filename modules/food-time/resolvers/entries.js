@@ -9,7 +9,7 @@ module.exports = async (_, {spaceId}, context) => {
 
   await validateSpaceAccess(normalizedSpaceId, context.user)
 
-  return knex.select('entries.id', 'time', 'extra_food', 'spaceId', 'feeding_types.type')
+  return knex.select('entries.id', 'time', 'extra_food', 'spaceId', 'vitamin', 'feeding_types.type')
     .from('entries')
     .innerJoin('feeding_types', 'feeding_types.id', 'entries.feeding_type_id')
     .orderBy('time', 'desc')
