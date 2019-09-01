@@ -22,7 +22,7 @@ module.exports = async (_, {spaceId}, context) => {
       const diffInMinutes = differenceInMinutes(new Date(), new Date(time * 1000))
 
       let diff
-      if (diffInMinutes > 60) {
+      if (diffInMinutes >= 60) {
         diff = `${Math.floor(diffInMinutes/60)}h ${diffInMinutes % 60}min`
       } else {
         diff = `${diffInMinutes}min`
