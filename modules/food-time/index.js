@@ -1,3 +1,4 @@
+const { AuthenticationError } = require('apollo-server-express')
 const typeDefs = require('./schema')
 
 const { getUser } = require('./models/user')
@@ -34,11 +35,17 @@ const context = async ({ req }) => {
 
   const token = (req.headers.authorization || '').replace('Bearer ', '')
 
-  const user = await getUser(token)
+  let user
 
-  if (!user) throw new Error('you must be logged in')
+  try {
+    user = await getUser(token)
+  } catch (e) {
+    throw new AuthenticationError('you must be logged in')
+  }
 
-  return { user }
+  if (!user) throw new AuthenticationError('you must be logged in')
+
+  return {user}
 }
 
 module.exports = {
