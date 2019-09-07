@@ -14,7 +14,9 @@ module.exports = async (_, {time, spaceId}, context) => {
     time,
     extra_food: 0,
     spaceId: normalizedSpaceId,
-    feeding_type_id: 1
+    feeding_type_id: 1,
+    vitamin: false,
+    breast_feeding_source_id: 4
   }
 
   return knex.insert(entry).into('entries')
