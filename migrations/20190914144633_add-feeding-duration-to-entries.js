@@ -1,12 +1,12 @@
 
 exports.up = function(knex) {
   return knex.schema.table('entries', table => {
-    table.boolean('vitamin').notNull().defaultTo(false)
+    table.integer('feeding_duration')
   })
 };
 
 exports.down = function(knex) {
   return knex.schema.table('entries', table => {
-    table.dropColumn('vitamin')
+    table.dropColumn('feeding_duration')
   })
 };

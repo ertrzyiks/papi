@@ -1,7 +1,7 @@
 const knex = require('../../../knex')
 const { validateEntryAccess } = require('./helpers')
 
-module.exports = async (_, {time, extra_food, type, vitamin, source, id, }, context) => {
+module.exports = async (_, {time, extra_food, type, vitamin, source, feeding_duration, id, }, context) => {
   await validateEntryAccess(id, context.user)
 
   const getFeedingTypeId = () => {
@@ -37,10 +37,11 @@ module.exports = async (_, {time, extra_food, type, vitamin, source, id, }, cont
       extra_food,
       vitamin,
       feeding_type_id: await getFeedingTypeId(),
-      breast_feeding_source_id: await getBreastFeedingSourceId()
+      breast_feeding_source_id: await getBreastFeedingSourceId(),
+      feeding_duration
     })
 
-  return knex.select('entries.id', 'time', 'extra_food', 'spaceId', 'vitamin', 'feeding_types.type', 'breast_feeding_sources.source')
+  return knex.select('entries.id', 'time', 'extra_food', 'spaceId', 'vitamin', 'feeding_types.type', 'breast_feeding_sources.source', 'feeding_duration')
     .from('entries')
     .innerJoin('feeding_types', 'feeding_types.id', 'entries.feeding_type_id')
     .leftOuterJoin('breast_feeding_sources', 'breast_feeding_sources.id', 'entries.breast_feeding_source_id')
