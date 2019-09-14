@@ -14,6 +14,7 @@ module.exports = gql`
     type: String! 
     vitamin: Boolean!
     source: String
+    feeding_duration: Int
   }
   
   type DeletionResult {
@@ -49,6 +50,7 @@ module.exports = gql`
       type: String
       vitamin: Boolean
       source: String
+      feeding_duration: Int
     ): Entry
   }
 `
