@@ -26,6 +26,7 @@ module.exports = gql`
     spaces: [Space]
     entries(spaceId: String!): [Entry]
     lastEntryDate(spaceId: String!): String
+    now: String
     entry(id: String!): Entry
   }
     

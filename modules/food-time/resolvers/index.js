@@ -7,4 +7,5 @@ module.exports = {
   removeEntry: require('./removeEntry'),
   createSpace: require('./createSpace'),
   lastEntryDate: require('./lastEntryDate'),
+  now: require('./now'),
 }
