@@ -12,6 +12,7 @@ const {
   createSpace,
   lastEntryDate,
   now,
+  stats,
 } = require('./resolvers')
 
 const resolvers = {
@@ -21,6 +22,7 @@ const resolvers = {
     entry,
     lastEntryDate,
     now,
+    stats,
   },
   Mutation: {
     createSpace,

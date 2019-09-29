@@ -22,12 +22,22 @@ module.exports = gql`
     message: String!
   }
   
+  type ExtraFoodPerDayStat {
+    date: String!
+    extra_food: Int!
+  }
+  
+  type Stats {
+    extra_food_per_day: [ExtraFoodPerDayStat]
+  }
+  
   type Query {
     spaces: [Space]
     entries(spaceId: String!): [Entry]
     lastEntryDate(spaceId: String!): String
     now: String
     entry(id: String!): Entry
+    stats(spaceId: String!): Stats!
   }
     
   type Mutation {

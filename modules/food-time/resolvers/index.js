@@ -8,4 +8,5 @@ module.exports = {
   createSpace: require('./createSpace'),
   lastEntryDate: require('./lastEntryDate'),
   now: require('./now'),
+  stats: require('./stats'),
 }
