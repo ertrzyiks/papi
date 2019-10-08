@@ -30,7 +30,7 @@ const spacesForUser = async (user) => {
   return await knex
     .select('id', 'display_name')
     .from('spaces')
-    .where({ id: spacesFromCollaboration })
+    .whereIn('id', spacesFromCollaboration)
     .orWhere({ owner_id: user.id })
 }
 
