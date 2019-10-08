@@ -27,8 +27,14 @@ module.exports = gql`
     extra_food: Int!
   }
   
+  type FeedingCountPerDayStat {
+    date: String!
+    feeding_count: Int!
+  }
+  
   type Stats {
     extra_food_per_day: [ExtraFoodPerDayStat]
+    feeding_count_per_day: [FeedingCountPerDayStat]
   }
   
   type Query {
