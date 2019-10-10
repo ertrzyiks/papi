@@ -20,6 +20,7 @@
     "google-auth-library": "^5.2.0",
     "graphql": "^14.4.2",
     "knex": "^0.19.1",
+    "lodash.groupby": "^4.6.0",
     "sqlite3": "^4.0.9",
     "uuid": "^3.3.2"
   }
