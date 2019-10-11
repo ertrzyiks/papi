@@ -38,10 +38,16 @@ module.exports = gql`
     secondBreakDurationInMins: Int  
   }
   
+  type AverageDayBreakDurationStat {
+    date: String!
+    average_duration_mins: Int
+  }
+  
   type Stats {
     extra_food_per_day: [ExtraFoodPerDayStat]
     feeding_count_per_day: [FeedingCountPerDayStat]
     night_breaks: [NightBreakDurationStat]
+    average_day_break: [AverageDayBreakDurationStat]
   }
   
   type Query {
