@@ -9,7 +9,10 @@ module.exports = async (_, {spaceId}, context) => {
       this.sum('extra_food as extra_food')
         .select(knex.raw('strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\')) as date'), 'time')
         .from('entries')
-        .where({spaceId})
+        .where({
+          spaceId,
+          deleted: 0
+        })
         .groupBy('date')
         .orderBy('time', 'desc')
         .limit(30)
@@ -22,7 +25,10 @@ module.exports = async (_, {spaceId}, context) => {
       this.count('* as feeding_count')
         .select(knex.raw('strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\')) as date'), 'time')
         .from('entries')
-        .where({spaceId})
+        .where({
+          spaceId,
+          deleted: 0
+        })
         .groupBy('date')
         .orderBy('time', 'desc')
         .limit(30)
@@ -41,6 +47,7 @@ module.exports = async (_, {spaceId}, context) => {
     '    LEFT JOIN entries T2\n' +
     '      ON T1.spaceId = T2.spaceId\n' +
     '      AND T2.time < T1.time\n' +
+    '      WHERE T1.deleted = 0\n' +
     '    GROUP BY T1.spaceId, date, T1.time\n' +
     '    HAVING T1.time > CAST(strftime(\'%s\', \'now\', \'-30 days\') AS INT)\n' +
     '    ORDER BY T1.time DESC'
@@ -71,6 +78,7 @@ module.exports = async (_, {spaceId}, context) => {
       '     LEFT JOIN entries T2\n' +
       '            ON T1.spaceId = T2.spaceId\n' +
       '            AND T2.time < T1.time\n' +
+      '            WHERE T1.deleted = 0\n' +
       '    GROUP BY T1.spaceId, date, T1.time\n' +
       '    having T1.time > CAST(strftime(\'%s\', \'now\', \'-30 days\') AS INT)\n' +
       '          order by T1.time DESC'
