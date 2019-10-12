@@ -9,4 +9,5 @@ module.exports = {
   lastEntryDate: require('./lastEntryDate'),
   now: require('./now'),
   stats: require('./stats'),
+  aggregated_stats: require('./aggregatedStats')
 }

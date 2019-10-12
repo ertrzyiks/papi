@@ -50,6 +50,21 @@ module.exports = gql`
     average_day_break: [AverageDayBreakDurationStat]
   }
   
+  type ExtraFoodPerWeekStat {
+    week_start_date: String!
+    extra_food: Int!
+  }
+  
+  type FeedingCountPerWeekStat {
+    week_start_date: String!
+    feeding_count: Int!
+  }
+  
+  type AggregatedStats {
+    extra_food_per_week: [ExtraFoodPerWeekStat]
+    feeding_count_per_week: [FeedingCountPerWeekStat]
+  }
+  
   type Query {
     spaces: [Space]
     entries(spaceId: String!): [Entry]
@@ -57,6 +72,7 @@ module.exports = gql`
     now: String
     entry(id: String!): Entry
     stats(spaceId: String!): Stats!
+    aggregated_stats(spaceId: String!): AggregatedStats!
   }
     
   type Mutation {
