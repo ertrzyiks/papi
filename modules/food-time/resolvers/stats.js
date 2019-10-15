@@ -2,7 +2,7 @@ const knex = require('../../../knex')
 const groupBy = require('lodash.groupby');
 const mean = require('lodash.mean');
 
-module.exports = async (_, {spaceId}, context) => {
+module.exports = async (_, {spaceId, daysAgo}, context) => {
   const extraFoodResults = await knex
     .select('*')
     .from(function() {
@@ -15,7 +15,7 @@ module.exports = async (_, {spaceId}, context) => {
         })
         .groupBy('date')
         .orderBy('time', 'desc')
-        .limit(30)
+        .limit(daysAgo)
     })
     .orderBy('time')
 
@@ -31,7 +31,7 @@ module.exports = async (_, {spaceId}, context) => {
         })
         .groupBy('date')
         .orderBy('time', 'desc')
-        .limit(30)
+        .limit(daysAgo)
     })
     .orderBy('time')
 
@@ -49,9 +49,9 @@ module.exports = async (_, {spaceId}, context) => {
     '      AND T2.time < T1.time\n' +
     '      WHERE T1.deleted = 0\n' +
     '    GROUP BY T1.spaceId, date, T1.time\n' +
-    '    HAVING T1.time > CAST(strftime(\'%s\', \'now\', \'-30 days\') AS INT)\n' +
+    '    HAVING T1.time > CAST(strftime(\'%s\', \'now\', ?) AS INT)\n' +
     '    ORDER BY T1.time DESC'
-    )
+    , [`-${daysAgo} days`])
     .then(data => {
       const grouped = groupBy(data, 'date')
       return Object.keys(grouped).map(date => {
@@ -80,9 +80,9 @@ module.exports = async (_, {spaceId}, context) => {
       '            AND T2.time < T1.time\n' +
       '            WHERE T1.deleted = 0\n' +
       '    GROUP BY T1.spaceId, date, T1.time\n' +
-      '    having T1.time > CAST(strftime(\'%s\', \'now\', \'-30 days\') AS INT)\n' +
+      '    having T1.time > CAST(strftime(\'%s\', \'now\', ?) AS INT)\n' +
       '          order by T1.time DESC'
-    )
+      , [`-${daysAgo} days`])
       .then(data => {
         const grouped = groupBy(data, 'date')
         const res = Object.keys(grouped).map(date => {

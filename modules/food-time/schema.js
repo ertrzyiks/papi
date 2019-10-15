@@ -71,7 +71,7 @@ module.exports = gql`
     lastEntryDate(spaceId: String!): String
     now: String
     entry(id: String!): Entry
-    stats(spaceId: String!): Stats!
+    stats(spaceId: String!, daysAgo: Int!): Stats!
     aggregated_stats(spaceId: String!): AggregatedStats!
   }
     
