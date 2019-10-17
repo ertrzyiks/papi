@@ -7,7 +7,7 @@ module.exports = async (_, {spaceId, daysAgo}, context) => {
     .select('*')
     .from(function() {
       this.sum('extra_food as extra_food')
-        .select(knex.raw('strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\')) as date'), 'time')
+        .select(knex.raw('strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\', \'localtime\')) as date'), 'time')
         .from('entries')
         .where({
           spaceId,
@@ -23,7 +23,7 @@ module.exports = async (_, {spaceId, daysAgo}, context) => {
     .select('*')
     .from(function() {
       this.count('* as feeding_count')
-        .select(knex.raw('strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\')) as date'), 'time')
+        .select(knex.raw('strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\', \'localtime\')) as date'), 'time')
         .from('entries')
         .where({
           spaceId,
@@ -36,10 +36,10 @@ module.exports = async (_, {spaceId, daysAgo}, context) => {
     .orderBy('time')
 
   const nightBreaksResults = await knex.raw(
-    'SELECT strftime(\'%d/%m/%Y \', datetime(T1.time, \'unixepoch\')) \n' +
+    'SELECT strftime(\'%d/%m/%Y \', datetime(T1.time, \'unixepoch\', \'localtime\')) \n' +
     '    AS date,\n' +
     '    Cast ((\n' +
-    '      JulianDay(T1.time, \'unixepoch\') - JulianDay(MAX(T2.time), \'unixepoch\')\n' +
+    '      JulianDay(T1.time, \'unixepoch\', \'localtime\') - JulianDay(MAX(T2.time), \'unixepoch\', \'localtime\')\n' +
     '    ) * 24 * 60 as INT) as timeSinceLastFeedingMins,\n' +
     '    T1.spaceId, T1.time,\n' +
     '    MAX(T2.time) AS time2\n' +
@@ -49,7 +49,7 @@ module.exports = async (_, {spaceId, daysAgo}, context) => {
     '      AND T2.time < T1.time\n' +
     '      WHERE T1.deleted = 0\n' +
     '    GROUP BY T1.spaceId, date, T1.time\n' +
-    '    HAVING T1.time > CAST(strftime(\'%s\', \'now\', ?) AS INT)\n' +
+    '    HAVING T1.time > CAST(strftime(\'%s\', \'now\', ?, \'localtime\') AS INT)\n' +
     '    ORDER BY T1.time DESC'
     , [`-${daysAgo} days`])
     .then(data => {
@@ -66,21 +66,21 @@ module.exports = async (_, {spaceId, daysAgo}, context) => {
     })
 
     const averageDayBreakResults = await knex.raw(
-      'SELECT  strftime(\'%d/%m/%Y \', datetime(T1.time, \'unixepoch\')) \n' +
+      'SELECT  strftime(\'%d/%m/%Y \', datetime(T1.time, \'unixepoch\', \'localtime\')) \n' +
       '    as date,\n' +
       '    Cast ((\n' +
-      '            JulianDay(T1.time, \'unixepoch\') - JulianDay(MAX(T2.time), \'unixepoch\')\n' +
+      '            JulianDay(T1.time, \'unixepoch\', \'localtime\') - JulianDay(MAX(T2.time), \'unixepoch\', \'localtime\')\n' +
       '        ) * 24 * 60 as INT) as timeSinceLastFeeding,\n' +
       '    T1.spaceId, T1.time,\n' +
       '    MAX(T2.time) AS time2,\n' +
-      '    ROW_NUMBER() OVER(PARTITION BY strftime(\'%d/%m/%Y \', datetime(T1.time, \'unixepoch\')) ORDER BY T1.time) AS seqId\n' +
+      '    ROW_NUMBER() OVER(PARTITION BY strftime(\'%d/%m/%Y \', datetime(T1.time, \'unixepoch\', \'localtime\')) ORDER BY T1.time) AS seqId\n' +
       '       from entries T1\n' +
       '     LEFT JOIN entries T2\n' +
       '            ON T1.spaceId = T2.spaceId\n' +
       '            AND T2.time < T1.time\n' +
       '            WHERE T1.deleted = 0\n' +
       '    GROUP BY T1.spaceId, date, T1.time\n' +
-      '    having T1.time > CAST(strftime(\'%s\', \'now\', ?) AS INT)\n' +
+      '    having T1.time > CAST(strftime(\'%s\', \'now\', ?, \'localtime\') AS INT)\n' +
       '          order by T1.time DESC'
       , [`-${daysAgo} days`])
       .then(data => {

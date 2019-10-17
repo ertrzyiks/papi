@@ -3,7 +3,7 @@ const knex = require('../../../knex')
 module.exports = async (_, {spaceId}, context) => {
   const extraFoodResults = await knex.raw(
     'SELECT MIN(date) AS week_start_date, ROUND(AVG(extra_food),0) AS extra_food  FROM\n' +
-    '(SELECT sum(extra_food) AS extra_food, strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\')) AS date, time, strftime(\'%W\', datetime(time, \'unixepoch\')) AS weekNumber\n' +
+    '(SELECT sum(extra_food) AS extra_food, strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\', \'localtime\')) AS date, time, strftime(\'%W\', datetime(time, \'unixepoch\', \'localtime\')) AS weekNumber\n' +
     'FROM entries\n' +
     'WHERE spaceId = ?' +
     'AND deleted = 0\n' +
@@ -16,7 +16,7 @@ module.exports = async (_, {spaceId}, context) => {
 
   const feedingCountResults = await knex.raw(
     'SELECT MIN(date) AS week_start_date, ROUND(AVG(feeding_count), 0) AS feeding_count  FROM\n' +
-    '(SELECT count(*) AS feeding_count, strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\')) AS date, time, strftime(\'%W\', datetime(time, \'unixepoch\')) AS weekNumber\n' +
+    '(SELECT count(*) AS feeding_count, strftime(\'%d/%m/%Y \', datetime(time, \'unixepoch\', \'localtime\')) AS date, time, strftime(\'%W\', datetime(time, \'unixepoch\', \'localtime\')) AS weekNumber\n' +
     'FROM entries\n' +
     'WHERE spaceId = ?' +
     'AND deleted = 0\n' +
