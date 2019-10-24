@@ -23,8 +23,11 @@ const resolvers = {
     entry,
     lastEntryDate,
     now,
-    stats,
+    stats: (_, args) => args,
     aggregated_stats
+  },
+  Stats: {
+    ...stats
   },
   Mutation: {
     createSpace,
