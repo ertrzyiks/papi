@@ -48,7 +48,7 @@ const context = async ({ req }) => {
   let user
 
   try {
-    user = await getUser(token+ 'd')
+    user = await getUser(token)
   } catch (e) {
     Sentry.captureException(e)
     throw new AuthenticationError('you must be logged in')
