@@ -13,6 +13,7 @@
     "seed": "knex seed:run"
   },
   "dependencies": {
+    "@sentry/node": "5.10.1",
     "apollo-server-express": "^2.8.1",
     "date-fns": "^2.0.1",
     "date-fns-tz": "^1.0.7",

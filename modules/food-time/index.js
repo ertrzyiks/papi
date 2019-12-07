@@ -1,5 +1,6 @@
 const { AuthenticationError } = require('apollo-server-express')
 const typeDefs = require('./schema')
+const Sentry = require('@sentry/node')
 
 const { getUser } = require('./models/user')
 const {
@@ -47,8 +48,9 @@ const context = async ({ req }) => {
   let user
 
   try {
-    user = await getUser(token)
+    user = await getUser(token+ 'd')
   } catch (e) {
+    Sentry.captureException(e)
     throw new AuthenticationError('you must be logged in')
   }
 

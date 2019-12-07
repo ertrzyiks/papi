@@ -1,5 +1,7 @@
 const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
+const Sentry = require('@sentry/node')
+Sentry.init({ dsn: 'https://82dd777fb8d8437b9a41db7df91cd663@sentry.io/1848905' })
 
 const { typeDefs, resolvers, context } = require('./modules/food-time')
 
