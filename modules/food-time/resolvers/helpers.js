@@ -1,6 +1,7 @@
 const knex = require('../../../knex')
 const { loadSpace, spaceAllowedFor } = require('../models/space')
 const { loadEntry } = require('../models/entry')
+const { loadActivityLogEntry } = require('../models/activity_log')
 
 const normalize = async (spaceId) => {
   const lowerSpaceId = spaceId.toLowerCase()
@@ -34,8 +35,19 @@ const validateEntryAccess = async (entryId, user) => {
   await validateSpaceAccess(entry.spaceId, user)
 }
 
+const validateActivityLogEntryAccess = async (entryId, user) => {
+  const entry = await loadActivityLogEntry(entryId)
+
+  if (!entry) {
+    throw new Error('Not found')
+  }
+
+  await validateSpaceAccess(entry.space_id, user)
+}
+
 module.exports = {
   normalize,
   validateSpaceAccess,
-  validateEntryAccess
+  validateEntryAccess,
+  validateActivityLogEntryAccess
 }

@@ -17,6 +17,13 @@ module.exports = gql`
     feeding_duration: Int
   }
   
+  type ActivityLogEntry {
+    id: String!
+    time: Int!
+    message: String!
+    spaceId: String!
+  }
+  
   type DeletionResult {
     removedId: String!
     message: String!
@@ -68,9 +75,11 @@ module.exports = gql`
   type Query {
     spaces: [Space]
     entries(spaceId: String!): [Entry]
+    activity_log(spaceId: String!): [ActivityLogEntry]
     lastEntryDate(spaceId: String!): String
     now: String
     entry(id: String!): Entry
+    activity_log_entry(id: String!): ActivityLogEntry
     stats(spaceId: String!, daysAgo: Int!): Stats!
     aggregated_stats(spaceId: String!): AggregatedStats!
   }
@@ -98,5 +107,15 @@ module.exports = gql`
       source: String
       feeding_duration: Int
     ): Entry
+    
+    createActivityLogEntry (
+      spaceId: String!
+      time: Int!  
+      message: String!
+    ): ActivityLogEntry
+    
+    removeActivityLogEntry (
+      id: String!
+    ): DeletionResult
   }
 `

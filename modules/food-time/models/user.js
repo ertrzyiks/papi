@@ -8,7 +8,6 @@ const loadUser = async (email) => {
     .from('users')
     .where({email})
     .first()
-
 }
 
 const createUser = async (email) => {

@@ -7,9 +7,13 @@ const {
   spaces,
   entries,
   entry,
+  activity_log,
+  activity_log_entry,
   createEntry,
   updateEntry,
   removeEntry,
+  createActivityLogEntry,
+  removeActivityLogEntry,
   createSpace,
   lastEntryDate,
   now,
@@ -22,6 +26,8 @@ const resolvers = {
     spaces,
     entries,
     entry,
+    activity_log,
+    activity_log_entry,
     lastEntryDate,
     now,
     stats: (_, args) => args,
@@ -35,6 +41,8 @@ const resolvers = {
     createEntry,
     updateEntry,
     removeEntry,
+    createActivityLogEntry,
+    removeActivityLogEntry
   }
 }
 
