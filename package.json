@@ -20,7 +20,7 @@
     "express": "^4.17.1",
     "google-auth-library": "^5.2.0",
     "graphql": "^14.4.2",
-    "knex": "^0.19.1",
+    "knex": "^2.4.0",
     "lodash.groupby": "^4.6.0",
     "lodash.mean": "^4.1.0",
     "sqlite3": "^4.0.9",
